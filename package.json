@@ -1,0 +1,20 @@
+{
+  "name": "aws-lambda-puppeteer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chris-talke-canopi/aws-lambda-puppeteer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chris-talke-canopi/aws-lambda-puppeteer/issues"
+  },
+  "homepage": "https://github.com/chris-talke-canopi/aws-lambda-puppeteer#readme"
+}
