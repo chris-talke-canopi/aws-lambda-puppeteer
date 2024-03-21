@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/chris-talke-canopi/aws-lambda-puppeteer/issues"
   },
-  "homepage": "https://github.com/chris-talke-canopi/aws-lambda-puppeteer#readme"
+  "homepage": "https://github.com/chris-talke-canopi/aws-lambda-puppeteer#readme",
+  "dependencies": {
+    "puppeteer": "^22.6.0"
+  }
 }
