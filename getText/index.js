@@ -1,8 +1,15 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require("puppeteer-core");
+const chromium = require("@sparticuz/chromium");
 
 exports.handler = async (event) => {
 
-    const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(process.env.AWS_EXECUTION_ENV ? "/opt/puppeteer/node_modules/@sparticuz/chromium/bin" : undefined),
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true,
+  });
     let page = await browser.newPage();
 
     await page.goto('https://pptr.dev/');
