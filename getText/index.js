@@ -6,7 +6,7 @@ exports.handler = async (event) => {
   const browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(process.env.AWS_EXECUTION_ENV ? "/opt/puppeteer/node_modules/@sparticuz/chromium/bin" : undefined),
+      executablePath: await chromium.executablePath(process.env.AWS_EXECUTION_ENV ? "/opt/nodejs/node_modules/@sparticuz/chromium/bin" : undefined),
       headless: chromium.headless,
       ignoreHTTPSErrors: true,
   });
