@@ -3,8 +3,9 @@ const chromium = require("@sparticuz/chromium");
 
 exports.handler = async (event) => {
 
-    let username = event["queryStringParameters"]['username'];
-    let password = event["queryStringParameters"]['password'];
+    let folders = {};
+    let username = process.env.RISE_USERNAME;
+    let password = process.env.RISE_PASSWORD;
 
     const browser = await puppeteer.launch({
         args: chromium.args,
@@ -17,7 +18,7 @@ exports.handler = async (event) => {
 
     const page = await browser.newPage();
         
-    await page.goto("https://id.articulate.com/signin");
+    await page.goto("https://id.articulate.com");
     
     console.log(`INFORMATION: Entering Username.`);
     await page.waitForSelector("input#email");
@@ -34,18 +35,24 @@ exports.handler = async (event) => {
     console.log(`INFORMATION: Signing In.`);
     await page.waitForSelector('input#user_first_name');
     
+    console.log(`INFORMATION: Going to main page.`);
+    console.log(await page.title());
+    await page.goto("https://rise.articulate.com/manage/all-content");
+    await page.waitForSelector("#current-content");
+    
     console.log(`INFORMATION: Getting folder structure.`)
+    console.log(await page.title());
     await page.goto("https://rise.articulate.com/manage/api/folders/", { waitUntil: "networkidle0" });
     folders = await page.$eval('body', el => JSON.parse(el.innerText));
     
     const folders_arr = Object.keys(folders);
     console.log(`INFORMATION: '${folders_arr.length}' folders detected, proceeding with getting further data for each folder.`);
-    await Promise.all(folders_arr.map(async key => {
-        const folder = folders[key];
+    for (var i = 0; i < folders_arr.length; i++) {
+        const folder = folders_arr[i]
         console.log(`INFORMATION: Getting content for 'Folder Id: ${folder.id}'.`);
-        folders[key].items = await getContent(browser, `https://rise.articulate.com/manage/api/folders/${folder.id}?page=0&legacyViewEnabled=false&pageSize=50&sort=RECENT&type=ALL_CONTENT`);
-    }));    
-    
+        folders[folder].items = await getContent(browser, `https://rise.articulate.com/manage/api/folders/${folder.id}?page=0&legacyViewEnabled=false&pageSize=50&sort=RECENT&type=ALL_CONTENT`);
+    }
+
     browser.close();
 
     return {
@@ -53,3 +60,10 @@ exports.handler = async (event) => {
         message: folders,
     };
 };
+
+async function getContent(browser, url) {
+    let newPage = await browser.newPage();
+    await newPage.goto(url, { waitUntil: "networkidle0" })
+    let content = await newPage.$eval('body', el => JSON.parse(el.innerText));
+    return content;
+}
