@@ -11,7 +11,7 @@ exports.handler = async (event) => {
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath(
-            "https://canopi-chris-bucket.s3.ap-southeast-2.amazonaws.com/chromium-v112.0.2-pack.tar"
+            "https://canopi-chris-bucket.s3.ap-southeast-2.amazonaws.com/chromium-v123.0.1-pack.tar"
         ),
         headless: chromium.headless,
     });
@@ -36,7 +36,6 @@ exports.handler = async (event) => {
     await page.waitForSelector('input#user_first_name');
     
     console.log(`INFORMATION: Going to main page.`);
-    console.log(await page.title());
     await page.goto("https://rise.articulate.com/manage/all-content");
     await page.waitForSelector("#current-content");
     
@@ -49,11 +48,9 @@ exports.handler = async (event) => {
     console.log(`INFORMATION: '${folders_arr.length}' folders detected, proceeding with getting further data for each folder.`);
     for (var i = 0; i < folders_arr.length; i++) {
         const folder = folders_arr[i]
-        console.log(`INFORMATION: Getting content for 'Folder Id: ${folder.id}'.`);
-        folders[folder].items = await getContent(browser, `https://rise.articulate.com/manage/api/folders/${folder.id}?page=0&legacyViewEnabled=false&pageSize=50&sort=RECENT&type=ALL_CONTENT`);
+        console.log(`INFORMATION: Getting content for 'Folder Id: ${folder}'.`);
+        folders[folder].items = await getContent(browser, `https://rise.articulate.com/manage/api/folders/${folder}?page=0&legacyViewEnabled=false&pageSize=50&sort=RECENT&type=ALL_CONTENT`);
     }
-
-    browser.close();
 
     return {
         status: 200,
@@ -63,7 +60,9 @@ exports.handler = async (event) => {
 
 async function getContent(browser, url) {
     let newPage = await browser.newPage();
+    
     await newPage.goto(url, { waitUntil: "networkidle0" })
-    let content = await newPage.$eval('body', el => JSON.parse(el.innerText));
-    return content;
+    let response = await newPage.$eval('body', el => JSON.parse(el.innerText));
+    
+    return response.content;
 }

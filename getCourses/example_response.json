@@ -1,0 +1,22 @@
+{
+    "status": 200,
+    "message": {
+      "0f722d8e-7723-468e-b279-3c5551f19f16": {
+        "id": "0f722d8e-7723-468e-b279-3c5551f19f16",
+        "name": "shared",
+        "isRoot": true,
+        "createdAt": "2023-07-13T03:24:56.068Z",
+        "deletedAt": null,
+        "folderType": "shared",
+        "parentFolderId": null,
+        "renderParentId": null,
+        "roleId": 1,
+        "ownerPrincipalId": "g:83b21e00-e2f3-4cd8-af22-ac8568e206f3",
+        "subscriptionId": "83b21e00-e2f3-4cd8-af22-ac8568e206f3",
+        "items": { "...": "..." }
+      },
+      "...": {
+        "...": "..."
+      }
+    }
+  }

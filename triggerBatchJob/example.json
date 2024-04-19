@@ -1,0 +1,11 @@
+{
+    "environment" : "rise_organisation_name",
+    "username" : "rise_username",
+    "password" : "rise_password",
+    "courses" : [
+        {
+            "id" : "course_identifier",
+            "name": "course_name"
+        }
+    ]
+}
