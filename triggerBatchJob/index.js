@@ -7,12 +7,7 @@ const sqsClient = new SQSClient({ region: 'ap-southeast-2' });
 
 exports.handler = async (event) => {
 
-    console.log(event.body)
-
-    let payload = {};
-    if (event.body && isJsonString(event.body)) {
-        payload = JSON.parse(event.body);
-    }
+    let payload = event.body;
 
     if (!payload && !payload.environment && !payload.courses && !payload.username && !payload.password) {
         return {
@@ -22,18 +17,20 @@ exports.handler = async (event) => {
             },
         };
     }
-
+    
+ 
     const queueUrl = process.env.NEW_BATCH__QUEUE;
     const groupId = uuidv4();
 
     const params = {
         QueueUrl: queueUrl,
         Entries: payload.courses.map( (course, index) => ({
-            Id: index + 1,
-            MessageBody: {
+            Id: `${index + 1}`,
+            MessageBody: JSON.stringify({
                 id: course.id,
+                batchId: groupId,
                 name: course.name
-            },
+            }),
             MessageGroupId: groupId,
             MessageDeduplicationId: uuidv4()
         }))
