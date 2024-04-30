@@ -12,7 +12,7 @@ jobs:
       - name: Get functions filenames
         id: getLambdas
         run: |
-          lambdas=$(tree -d -L 1 -J . | jq -j -c '.[0].contents | map(.name)')
+          lambdas=$(tree -d -L 1 -J ./lambda | jq -j -c '.[0].contents | map(.name)')
           echo ::set-output name=lambdas::${lambdas}
   update-code:
     needs: get-filenames
