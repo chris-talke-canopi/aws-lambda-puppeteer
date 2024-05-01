@@ -11,7 +11,8 @@ exports.handler = async (event) => {
         const supabaseKey = process.env.SUPABASE_KEY;
         const supabase = createClient(supabaseUrl, supabaseKey);
 
-        let payload = event.body;
+        let payload = JSON.parse(event.body);
+        
         if (!payload && !payload.environment && !payload.courses && !payload.username && !payload.password) {
             return {
                 status: 400,
@@ -55,9 +56,18 @@ exports.handler = async (event) => {
         const data = await sqsClient.send(command);
         console.log("Batch send success:", data.Successful.map((msg) => msg.Id));
         
-        return data;
+        return {
+            message: {
+                batchId: groupId
+            },
+            status: 200
+        };
     } catch (err) {
         console.error("Error in sending batch", err);
-        throw err;
+                
+        return {
+            message: "There was a problem triggering this batch job.",
+            status: 500
+        };
     }
 };
