@@ -19,10 +19,10 @@ exports.handler = async (event) => {
 
     let download_package = null;
 
-    // Update Job from '0 - Draft' to '1 - In Progress'
+    // Update Job from '0 - Not Yet Started' to '1 - In Progress'
     await supabase.from("be_jobs").update({ status: 1, updated_at: (new Date()).toISOString() }).eq("batchId", payload.batchId).select();
 
-    // Update Item from '0 - Draft', to '1 - In Progress'
+    // Update Item from '0 - Not Yet Started', to '1 - Generating Link'
     await supabase.from("be_items").update({ status: 1, updated_at: (new Date()).toISOString()}).eq("courseId", payload.courseId).eq("batchId", payload.batchId).select();
 
     try {
@@ -73,7 +73,7 @@ exports.handler = async (event) => {
 
         console.log(`INFORMATION: Filename is '${download_package.settings.filename}' and download link is '${download_package.location}'.`);
 
-        // Update Item from '1 - In Progress', to '2 - Completed'
+        // Update Item from '1 - Generating Link', to '2 - Downloading'
         const updatedItem = { status: 2, filename: download_package.settings.filename, location: download_package.location, updated_at: (new Date()).toISOString() };
         await supabase.from("be_items").update(updatedItem).eq("courseId", payload.courseId).eq("batchId", payload.batchId).select();
 
@@ -88,7 +88,7 @@ exports.handler = async (event) => {
     catch (error) {
         console.log(error);
 
-        // Update Item from '1 - In Progress', to '3 - Failed'
+        // Update Item from '1 - Generating Link', to '3 - Failed'
         await supabase.from("be_items").update({ status: 3, updated_at: (new Date()).toISOString() }).eq("courseId", payload.courseId).eq("batchId", payload.batchId).select();
 
         return null;

@@ -37,8 +37,8 @@ exports.handler = async (event) => {
 
         console.log("File uploaded successfully:", s3Params.Key);
 
-        // Update Item from '2 - Downloading', to '3 - Completed'
-        const updatedItem = { status: 3, updated_at: new Date().toISOString() };
+        // Update Item from '2 - Downloading', to '4 - Completed'
+        const updatedItem = { status: 4, updated_at: new Date().toISOString() };
         await supabase.from("be_items").update(updatedItem).eq("courseId", payload.courseId).eq("batchId", payload.batchId).select();
 
         const queueUrl = process.env.NEW_BUNDLE__QUEUE;
@@ -50,8 +50,8 @@ exports.handler = async (event) => {
     } catch (error) {
         console.error("Error processing event:", error);
 
-        // Update Item from '2 - Downloading', to '4 - Failed'
-        const updatedItem = { status: 4, updated_at: new Date().toISOString() };
+        // Update Item from '2 - Downloading', to '3 - Failed'
+        const updatedItem = { status: 3, updated_at: new Date().toISOString() };
         await supabase.from("be_items").update(updatedItem).eq("courseId", payload.courseId).eq("batchId", payload.batchId).select();
 
         return;

@@ -5,7 +5,7 @@ exports.handler = async (event) => {
     const supabaseKey = process.env.SUPABASE_KEY;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    let { data: be_jobs, error } = await supabase.from('be_jobs').select('*');
+    let { data: be_jobs, error } = await supabase.from('be_jobs').select('*').order('id', false);
 
     return {
         status: 200,

@@ -1,11 +1,45 @@
 const puppeteer = require("puppeteer-core");
 const chromium = require("@sparticuz/chromium");
+const crypto = require('crypto');
 
 exports.handler = async (event) => {
 
     let folders = {};
-    let username = process.env.RISE_USERNAME;
-    let password = process.env.RISE_PASSWORD;
+    let username = null;
+    let password = null;
+    
+    // Get Payload & Decrypt Password
+    const payload = JSON.parse(event.body);
+    if (typeof payload.values === 'string') {
+      payload.values = JSON.parse(payload.values);
+    }
+    
+    const [ dec_username, dec_password ] = await fetch({
+      method: 'get',
+      url: 'https://i4nsjamm6qyrlm73fjtcqctwue0zrwge.lambda-url.ap-southeast-2.on.aws',
+      headers: { 
+        'Content-Type': 'application/json'
+      },
+      body : JSON.stringify({
+          action: process.env.DECRYPT_SECRET_ACTION,
+          ...payload
+      })
+    })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((error) => {
+      console.log(error);
+      return [null, null];
+    });
+
+    // If the Username & Password remain as 'null', then error out.
+    if (!username && !password) {
+        return {
+            status: 400,
+            message: "Invalid payload",
+        };
+    }
 
     const browser = await puppeteer.launch({
         args: chromium.args,
@@ -65,4 +99,18 @@ async function getContent(browser, url) {
     let response = await newPage.$eval('body', el => JSON.parse(el.innerText));
     
     return response.content;
+}
+
+function decryptString(encryptedText, secret, iv) {
+  const algorithm = 'aes-256-cbc';
+
+  // Create a decipher with the secret key and IV
+  const decipher = crypto.createDecipheriv(algorithm, secret, Buffer.from(iv, 'hex'));
+
+  // Decrypt the encrypted text
+  let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+
+  // Return the decrypted text
+  return decrypted;
 }
